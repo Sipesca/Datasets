@@ -33,7 +33,7 @@ MyCompleteDate <- function(x,date=c("2012-12-31","2013-02-01"),interval="days",v
   contaMIN = 0;
   for(i in seq (from = 1, to = length(unique(x$idNodo))) ){
     s <- seq(as.Date(date[1]),as.Date(date[2]),interval)
-    print(paste("Range:",length(s),sep="" ))
+    #print(paste("Range:",length(s),sep="" ))
     conta = 0
     EmpiezaSerie = FALSE
     
@@ -79,7 +79,7 @@ MyCompleteDateHour <- function(x,date=c("2012-12-31 00:00:00","2013-02-01 00:00:
   contaMIN = 0;
     for(i in seq (from = 1, to = length(unique(x$idNodo))) ){
       s <- seq(as.POSIXct(date[1]),as.POSIXct(date[2]),interval)
-      print(paste("Range:",length(s),sep="" ))
+      #print(paste("Range:",length(s),sep="" ))
       conta = 0
       EmpiezaSerie = FALSE
       
@@ -122,16 +122,16 @@ MyCompleteDateHour <- function(x,date=c("2012-12-31 00:00:00","2013-02-01 00:00:
 MyGetSerieDate <- function(x,date=c("2012-12-31 00:00:00","2013-02-01 00:00:00"),interval="days", valNA=NA, umbralNA = 0,TS = FALSE,minimalSize = 15){
   for(i in seq (from = 1, to = length(unique(x$idNodo))) ){
     s <- seq(as.Date(date[1]),as.Date(date[2]),interval)
-    print(paste("Range:",length(s),sep="\t" ))
+    #print(paste("Range:",length(s),sep="\t" ))
     conta = 0
     contaNA = 0
     EmpiezaSerie = FALSE
     temp = data.frame(row.names = c("TS","VALUE"))
 
     for(j in seq_along(s) ){
-      print(j)
+      print(s[[j]])
       if((length(x[x$idNodo == unique(x$idNodo)[i] & x$Fecha == s[[j]] ,c(1)]))==1){
-        print(paste("Existe",x[x$idNodo == unique(x$idNodo)[i] & x$Fecha == s[[j]] ,c(3)]))
+        #print(paste("Existe",x[x$idNodo == unique(x$idNodo)[i] & x$Fecha == s[[j]] ,c(3)]))
         if(is.na((x[x$idNodo == unique(x$idNodo)[i] & x$Fecha == s[[j]] ,c(3)]))){
           print("Es nulo")
           #Valor nulo
@@ -145,35 +145,33 @@ MyGetSerieDate <- function(x,date=c("2012-12-31 00:00:00","2013-02-01 00:00:00")
             if(conta> minimalSize){
             print(temp)
             temp = temp[order(temp[,1], decreasing = FALSE), ]
-            print(paste("SERIE:",max(temp[,1]),min(temp[,1]), conta,sep = "\t"))
+            print(paste("SERIE:",max(temp[,1]),min(temp[,1]), conta,sep = " "))
             
-              if(TS){
-                write(temp[,1:2],paste(interval,unique(datos$idNodo)[1],min(temp[,1]),max(temp[,1]),".csv",sep = "-"), sep=";",ncolumns = 2)
-              }else{
-                write(temp[,2],paste(interval,unique(datos$idNodo)[1],min(temp[,1]),max(temp[,1]),".csv",sep = "-"), sep=";",ncolumns = 1)                
-              }
+            write(as.matrix(t(temp[,c(1,2)])),paste(interval,unique(datos$idNodo)[i],min(temp[,1]),max(temp[,1]),paste("|",conta,"|",sep = ""),paste("[",min(temp[,2],na.rm = TRUE),"-",max(temp[,2],na.rm = TRUE),"]",sep = ""),"TS.csv",sep = "_"), sep=",",ncolumns = 2)
+            write(temp[,2],paste(interval,unique(datos$idNodo)[i],min(temp[,1]),max(temp[,1]),paste("|",conta,"|",sep = ""),paste("[",min(temp[,2],na.rm = TRUE),"-",max(temp[,2],na.rm = TRUE),"]",sep = ""),".csv",sep = "_"), sep=",",ncolumns = 1)                
+            
             }
             
             rm(temp)
             conta = 0
             contaNA = 0
             temp = data.frame(row.names = c("TS","VALUE"))
-            print(paste("SIZE",length(temp)))
+            #print(paste("SIZE",length(temp)))
             
           }else{
             conta = conta +1;
             t = data.frame(s[[j]],x[x$idNodo == unique(x$idNodo)[i] & x$Fecha == s[[j]] ,c(3)])
             temp = rbind(temp,t)
-            print(paste("Temp size:",length(temp[,1])))
+            #print(paste("Temp size:",length(temp[,1])))
           }
           
         }else{
-          print("No es nulo lo metemos")
+          #print("No es nulo lo metemos")
           conta = conta + 1;
           #Cualquier otro valor
           t = data.frame(s[[j]],x[x$idNodo == unique(x$idNodo)[i] & x$Fecha == s[[j]] ,c(3)])
           temp = rbind(temp,t)
-          print(paste("Temp size:",length(temp[,1])))
+          #print(paste("Temp size:",length(temp[,1])))
         }
       }
     }
@@ -183,19 +181,16 @@ MyGetSerieDate <- function(x,date=c("2012-12-31 00:00:00","2013-02-01 00:00:00")
   if(conta> minimalSize){
     print(temp)
     temp = temp[order(temp[,1], decreasing = FALSE), ]
-    print(paste("SERIE:",max(temp[,1]),min(temp[,1]), conta,sep = "\t"))
+    print(paste("SERIE:",max(temp[,1]),min(temp[,1]), conta,sep = " "))
     
-  
-      write(as.matrix(t(temp[,1:2])),paste(interval,"-",unique(datos$idNodo)[1],"-",min(temp[,1]),max(temp[,1]),"-TS.csv",sep = ""), sep=";",ncolumns = 2)
-    
-      write(temp[,2],paste(interval,unique(datos$idNodo)[1],min(temp[,1]),max(temp[,1]),".csv",sep = ""), sep=";",ncolumns = 1)                
+    write(as.matrix(t(temp[,c(1,2)])),paste(interval,unique(datos$idNodo)[i],min(temp[,1]),max(temp[,1]),paste("|",conta,"|",sep = ""),paste("[",min(temp[,2],na.rm = TRUE),"-",max(temp[,2],na.rm = TRUE),"]",sep = ""),"TS.csv",sep = "_"), sep=",",ncolumns = 2)
+    write(temp[,2],paste(interval,unique(datos$idNodo)[i],min(temp[,1]),max(temp[,1]),paste("|",conta,"|",sep = ""),paste("[",min(temp[,2],na.rm = TRUE),"-",max(temp[,2],na.rm = TRUE),"]",sep = ""),".csv",sep = "_"), sep=",",ncolumns = 1)                
     
   }
   
-  print("Sorting Dataset...")
   #x = x[order(x$Fecha, decreasing = FALSE), ]
   print("Done")
-  print(paste("NA values added:",contaNA))
+  #print(paste("NA values added:",contaNA))
   #return (x)  
 }
 
