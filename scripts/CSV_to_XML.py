@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, getopt, csv, json, re
+import sys, getopt, csv
 from lxml import etree
 
 def main(argv):
