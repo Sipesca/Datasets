@@ -3,12 +3,7 @@ Datasets de Sipesca para el estudio de series temporales
 
 ## Tipos de archivos ofrecidos
 
-Se presentan 4 tipos de archivos distintos
-
-* CSV
-* JSON
-* ARFF
-* XML
+Se presentan las series de datos en formato CSV, así como varios scripts conversores para otros formatos estandar como JSON y XML (y más que irán siendo añadidos, como ARFF)
 
 ## Series con y sin marcas de tiempo
 
